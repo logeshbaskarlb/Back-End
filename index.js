@@ -28,7 +28,6 @@ app.post("/register", async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
     const connection = await MongoClient.connect(URL);
     console.log(connection);
     const db = connection.db("users");
@@ -44,7 +43,7 @@ app.post("/register", async (req, res) => {
         userId: result.insertedId,
       },
       secretKey,
-      { expiresIn: "1h" }
+      { expiresIn: "3h" }
     );
     res.status(201).json({
       message: " Registration success",
@@ -76,7 +75,7 @@ app.post("/login", async (req, res) => {
         res.status(404).json({ message: "User or password does not match" });
       } else {
         const token = jsonwebtoken.sign({ userId: user._id }, secretKey, {
-          expiresIn: "1h",
+          expiresIn: "3h",
         });
         res.status(200).json({ message: "Login successful", token });
       }
@@ -100,7 +99,7 @@ app.post("/forget-password", async (req, res) => {
 
     const token = jsonwebtoken.sign({ id: user._id }, secretKey, 
       {
-      expiresIn: "1hr",
+      expiresIn: "3hr",
     });
 
     await db.collection("Registered").updateOne(
