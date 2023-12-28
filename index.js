@@ -1,17 +1,16 @@
 import express from "express";
 import bcrypt from "bcryptjs";
+import jsonwebtoken from "jsonwebtoken";
 import cors from "cors";
 import * as dotenv from "dotenv";
 dotenv.config();
 import { MongoClient } from "mongodb";
-import jsonwebtoken from "jsonwebtoken";
 import nodemailer from "nodemailer";
-
 const secretKey = process.env.JWT_SECRET;
-
-const app = express();
 const URL = process.env.DB;
 const PORT = process.env.PORT;
+
+const app = express();
 app.use(express.json());
 app.use(
   cors({
@@ -29,7 +28,6 @@ app.post("/register", async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const connection = await MongoClient.connect(URL);
-    console.log(connection);
     const db = connection.db("users");
     const newUser = {
       firstName,
@@ -43,7 +41,7 @@ app.post("/register", async (req, res) => {
         userId: result.insertedId,
       },
       secretKey,
-      { expiresIn: "3h" }
+      { expiresIn: "1h" }
     );
     res.status(201).json({
       message: " Registration success",
@@ -86,7 +84,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/forget-password", async (req, res) => {
+app.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
     const connection = await MongoClient.connect(URL);
@@ -149,7 +147,6 @@ app.post("/reset-password/:token", async (req, res) => {
           const user = await db
             .collection("Registered")
             .findOne({ token: token });
-
           await db.collection("Registered").updateOne(
             { token },
             {
