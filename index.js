@@ -1,37 +1,33 @@
-import express from "express";
-import bcrypt from "bcryptjs";
-import jsonwebtoken from "jsonwebtoken";
-import cors from "cors";
-import * as dotenv from "dotenv";
-dotenv.config();
-import { MongoClient } from "mongodb";
-import nodemailer from "nodemailer";
-const secretKey = process.env.JWT_SECRET;
-const URL = process.env.DB;
-const PORT = process.env.PORT;
-
+const express = require("express")
+const bcrypt = require("bcryptjs")
+const jsonwebtoken =require("jsonwebtoken")
+const cors = require("cors")
+const { MongoClient} = require("mongodb");
+const dotenv = require("dotenv").config()
 const app = express();
+const URL = process.env.DB;
+const secretKey = process.env.JWT_SECRET;
+const PORT = process.env.PORT;
+const nodemailer = require("nodemailer")
 app.use(express.json());
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:3000",
   })
 );
 
-
-app.get("/",(req,res)=>{
-  res.json(`Heloo to the server`)
-})
+app.get("/", (req, res) => {
+  res.json(`Heloo to the server`);
+});
 
 app.post("/register", async (req, res) => {
-  try {
-    const { firstName, lastName, email, password } = req.body;
+  try {       
+    const { name, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const connection = await MongoClient.connect(URL);
     const db = connection.db("users");
     const newUser = {
-      firstName,
-      lastName,
+      name,
       email,
       password: hashedPassword,
     };
@@ -41,7 +37,7 @@ app.post("/register", async (req, res) => {
         userId: result.insertedId,
       },
       secretKey,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
     res.status(201).json({
       message: " Registration success",
@@ -66,69 +62,77 @@ app.post("/login", async (req, res) => {
       email,
     });
     if (!user) {
-      res.status(404).json({ message: "User or password does not match" });
-    } else {
+      res.status(404).json({ message: "User or password not match!" });
+    } 
       const passwordValid = await bcrypt.compare(password, user.password);
       if (!passwordValid) {
-        res.status(404).json({ message: "User or password does not match" });
-      } else {
-        const token = jsonwebtoken.sign({ userId: user._id }, secretKey, {
-          expiresIn: "3h",
-        });
-        res.status(200).json({ message: "Login successful", token });
+        res.status(404).json({ message: "User or password not match!" });
       }
-    }
-    connection.close();
+        const token = jsonwebtoken.sign({ userId: user._id }, secretKey, {
+          expiresIn: "24h",
+        });
+        res.status(200).json({
+          userId: user._id,
+          token,
+        });
+      
+        connection.close();
+
+   
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
+//forgot-password
 app.post("/forgot-password", async (req, res) => {
+    
   try {
     const { email } = req.body;
     const connection = await MongoClient.connect(URL);
-    const db = connection.db("users");
-    const user = await db.collection("Registered").findOne({ email });
+    const db = connection.db('users');
+    const user = await db.collection('Registered').findOne({ email });
 
-    if (!user) {
-      res.status(404).json({ message: "User not registered" });
+    if(!user){
+     res.status(404).json({
+      message: "User not register"
+     });
     }
 
-    const token = jsonwebtoken.sign({ id: user._id }, secretKey, 
-      {
-      expiresIn: "3hr",
-    });
+    const token = jsonwebtoken.sign({ id: user._id }, secretKey, { expiresIn: '24hr' });
 
-    await db.collection("Registered").updateOne(
-      { email },
-      {
-        $set: { token },
-      }
-    );
+    await db.collection('Registered').updateOne({ email }, {
+        $set: { token }
+    });
 
     connection.close();
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.MAIL_ID,
-        pass: process.env.MAIL_PASSWORD,
-      },
-    });
-    const info = await transporter.sendMail({
-      from: process.env.MAIL_ID,
-      to: email,
-      subject: "Reset password link",
-      text: `Click the following link to reset your password: ${process.env.CILENT_URL}/reset-password/${token}`,
+    const transporter = nodemailer.createTransport({ 
+        service: 'gmail',
+        host:"smpt.gmail.com",
+        auth: {
+            user: process.env.MAIL_ID,
+            pass: process.env.MAIL_PASSWORD,
+        },
+        port:587,
+        secure:false
     });
 
-    res.status(200).json({ message: "Password reset link sent successfully." });
-  } catch (error) {
+    const info = await transporter.sendMail({
+        from: process.env.MAIL_ID,
+        to: email,
+        subject: 'Reset password link',
+        html: `Click the following link to reset your password: ${process.env.CILENT_URL}/reset-password/${token}`
+    });
+   console.log(info);
+    res.status(200).json({ message: 'Password reset link sent successfully.' });
+} catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Failed to send password reset email." });
-  }
+    res.status(500).json({ message: 'Failed to send password reset email.' });
+}
 });
+
 
 app.post("/reset-password/:token", async (req, res) => {
   try {
@@ -157,7 +161,7 @@ app.post("/reset-password/:token", async (req, res) => {
             }
           );
           connection.close();
-          res.send({ message: "Password changed succesfully", user });
+          res.send({ message: "Password changed succesfully", user: user });
         }
       } catch (error) {
         console.log(error);
