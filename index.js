@@ -7,12 +7,13 @@ const dotenv = require("dotenv").config()
 const app = express();
 const URL = process.env.DB;
 const secretKey = process.env.JWT_SECRET;
-const PORT = process.env.PORT;
+const SMTP_PORT = process.env.SMTP_PORT;
 const nodemailer = require("nodemailer")
+
 app.use(express.json());
 app.use(
   cors({
-    origin:' https://imaginative-tartufo-b1b373.netlify.app'
+    origin:'https://beautiful-gnome-66e569.netlify.app'
   })
 );
 
@@ -172,8 +173,8 @@ app.post("/reset-password/:token", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on ${PORT}`);
+app.listen(SMTP_PORT, () => {
+  console.log(`Server is running on ${SMTP_PORT}`);
 });
 
 // 4000
