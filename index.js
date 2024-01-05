@@ -7,7 +7,7 @@ const dotenv = require("dotenv").config()
 const app = express();
 const URL = process.env.DB;
 const secretKey = process.env.JWT_SECRET;
-const SMTP_PORT = process.env.SMTP_PORT;
+const PORT = 4000;
 const nodemailer = require("nodemailer")
 
 app.use(express.json());
@@ -173,8 +173,8 @@ app.post("/reset-password/:token", async (req, res) => {
   }
 });
 
-app.listen(SMTP_PORT, () => {
-  console.log(`Server is running on ${SMTP_PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on ${PORT}`);
 });
 
 // 4000
