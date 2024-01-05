@@ -12,7 +12,7 @@ const nodemailer = require("nodemailer")
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://heartfelt-truffle-f16fdb.netlify.app",
+    origin:' https://imaginative-tartufo-b1b373.netlify.app'
   })
 );
 
