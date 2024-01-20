@@ -13,7 +13,7 @@ const nodemailer = require("nodemailer")
 app.use(express.json());
 app.use(
   cors({
-    origin:'https://beautiful-gnome-66e569.netlify.app'
+    origin:'*'
   })
 );
 
@@ -76,13 +76,12 @@ app.post("/login", async (req, res) => {
           userId: user._id,
           token,
         });
-      
-        connection.close();
-
    
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
+  }finally{
+    connection.close();
   }
 });
 
