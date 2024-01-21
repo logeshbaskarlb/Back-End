@@ -48,7 +48,7 @@ app.post("/register", async (req, res) => {
     connection.close();
   } catch (error) {
     console.log(error);
-  
+    
     res.status(500).json({
       message: "Server error",
     });
@@ -116,8 +116,7 @@ app.post("/forgot-password", async (req, res) => {
             user: process.env.MAIL_ID,
             pass: process.env.MAIL_PASSWORD,
         },
-        port:587,
-        secure:false
+       
     });
 
     const info = await transporter.sendMail({
