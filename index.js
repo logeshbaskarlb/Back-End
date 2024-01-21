@@ -48,13 +48,10 @@ app.post("/register", async (req, res) => {
     connection.close();
   } catch (error) {
     console.log(error);
-    if (connection) {
-      connection.close();
-    }
+  
     res.status(500).json({
       message: "Server error",
     });
- 
   }
 });
 
