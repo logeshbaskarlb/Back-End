@@ -122,7 +122,7 @@ app.post("/forgot-password", async (req, res) => {
         from: process.env.MAIL_ID,
         to: email,
         subject: 'Reset password link',
-        html: `Click the following link to reset your password: https://dapper-otter-b823ba.netlify.app/ /reset-password/${token}`
+        html: `Click the following link to reset your password: https://dapper-otter-b823ba.netlify.app/reset-password/${token}`
     });
     console.log(process.env.CILENT_URL)
    console.log(info);
