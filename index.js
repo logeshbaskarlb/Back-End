@@ -122,9 +122,9 @@ app.post("/forgot-password", async (req, res) => {
         from: process.env.MAIL_ID,
         to: email,
         subject: 'Reset password link',
-        html: `Click the following link to reset your password: ${process.env.CILENT_URL}/reset-password/${token}`
+        html: `Click the following link to reset your password:${process.env.CLIENT_URL}/reset-password/${token}`
     });
-    console.log(process.env.CILENT_URL)
+    console.log(process.env.CLIENT_URL)
    console.log(info);
     res.status(200).json({ message: 'Password reset link sent successfully.' });
 } catch (error) {
