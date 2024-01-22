@@ -9,12 +9,12 @@ const URL = process.env.DB;
 const secretKey = process.env.JWT_SECRET;
 const PORT = 4000;
 const nodemailer = require("nodemailer");
-const { error } = require("shell");
+
 
 app.use(express.json());
 app.use(
   cors({
-    origin:'https://dapper-otter-b823ba.netlify.app'
+    origin:'*'
   })
 );
 
