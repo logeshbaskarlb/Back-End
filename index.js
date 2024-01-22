@@ -13,7 +13,7 @@ const nodemailer = require("nodemailer")
 app.use(express.json());
 app.use(
   cors({
-    origin:'https://dapper-otter-b823ba.netlify.app/'
+    origin:'https://dapper-otter-b823ba.netlify.app'
   })
 );
 
