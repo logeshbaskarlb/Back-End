@@ -161,14 +161,16 @@ app.post("/reset-password/:token", async (req, res) => {
             }
           );
           connection.close();
-          res.send({ message: "Password changed succesfully", user: user });
+          res.status(200).send({ message: "Password changed succesfully", user });
         }
       } catch (error) {
         console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
       }
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
