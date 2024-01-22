@@ -141,7 +141,7 @@ app.post("/reset-password/:token", async (req, res) => {
     const token = req.params.token;
     jsonwebtoken.verify(token, secretKey, async (err, decoded) => {
       try {
-        if (error) {
+        if (err) {
           res.json({
             message: "Error with token",
           });
