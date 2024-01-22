@@ -115,15 +115,15 @@ app.post("/forgot-password", async (req, res) => {
             user: process.env.MAIL_ID,
             pass: process.env.MAIL_PASSWORD,
         },
-       
     });
 
     const info = await transporter.sendMail({
         from: process.env.MAIL_ID,
         to: email,
         subject: 'Reset password link',
-        html: `Click the following link to reset your password:https://dapper-otter-b823ba.netlify.app/reset-password/${token}`
+        html: `Click the following link to reset your password :  ${process.env.CLIENT_URL}/reset-password/${token}`
     });
+
     console.log(process.env.CLIENT_URL)
    console.log(info);
     res.status(200).json({ message: 'Password reset link sent successfully.' });
