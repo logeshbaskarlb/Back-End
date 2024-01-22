@@ -8,7 +8,8 @@ const app = express();
 const URL = process.env.DB;
 const secretKey = process.env.JWT_SECRET;
 const PORT = 4000;
-const nodemailer = require("nodemailer")
+const nodemailer = require("nodemailer");
+const { error } = require("shell");
 
 app.use(express.json());
 app.use(
@@ -140,7 +141,7 @@ app.post("/reset-password/:token", async (req, res) => {
     const token = req.params.token;
     jsonwebtoken.verify(token, secretKey, async (err, decoded) => {
       try {
-        if (err) {
+        if (error) {
           res.json({
             message: "Error with token",
           });
